@@ -1,0 +1,48 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import type { Project } from '../lib/site-files';
+
+interface Props { projects: Project[] }
+const { projects } = Astro.props;
+// Filter chips appear by themselves once there are more than 6 projects.
+const tags = projects.length > 6 ? ['All', ...new Set(projects.flatMap((p) => p.data.tags))] : [];
+---
+<section id="work" class="section container" aria-labelledby="work-title">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Selected work</p>
+      <h2 id="work-title">Things I built, <span class="serif">running.</span></h2>
+    </div>
+    <p>Each card plays a short illustration of what the project does. The case study has the design, the hard parts and the measured results.</p>
+  </div>
+  {tags.length > 0 && (
+    <div class="filters" role="group" aria-label="Filter projects">
+      {tags.map((t, i) => <button type="button" data-tag={t} aria-pressed={i === 0 ? 'true' : 'false'}>{t}</button>)}
+    </div>
+  )}
+  <div class="grid">
+    {projects.map((p) => <ProjectCard project={p} />)}
+  </div>
+</section>
+
+<style>
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: 16px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 20px; }
+  .filters button { cursor: pointer; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--ln2); background: transparent; color: var(--mu); font-size: 13px; font-weight: 500; transition: color 0.2s, background-color 0.2s; }
+  .filters button[aria-pressed="true"] { background: var(--tx); border-color: var(--tx); color: var(--bg); }
+</style>
+
+<script>
+  const box = document.querySelector<HTMLElement>('#work .filters');
+  if (box) {
+    box.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button');
+      if (!b) return;
+      const tag = b.dataset.tag!;
+      box.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      document.querySelectorAll<HTMLElement>('#work .card').forEach((c) => {
+        c.hidden = tag !== 'All' && !c.dataset.tags!.split('|').includes(tag);
+      });
+    });
+  }
+</script>

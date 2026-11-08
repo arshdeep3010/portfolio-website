@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+---
+<Base title="Page not found">
+  <Nav onHome={false} />
+  <main id="main" class="container nf">
+    <p class="eyebrow">404</p>
+    <h1>This page <span class="serif grad-text">doesn't exist.</span></h1>
+    <p>It may have moved, or the link has a typo.</p>
+    <a class="btn btn-primary" href="/">Go to the home page</a>
+  </main>
+</Base>
+
+<style>
+  .nf { padding-top: 120px; padding-bottom: 120px; display: grid; gap: 16px; justify-items: start; }
+  h1 { margin: 0; font-weight: 600; font-size: clamp(40px, 6vw, 72px); letter-spacing: -0.05em; line-height: 1; }
+  p { margin: 0; color: var(--mu); }
+</style>

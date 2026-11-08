@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import AgentOpsWindow from '../components/AgentOpsWindow.astro';
+import ProofStrip from '../components/ProofStrip.astro';
+import WorkGrid from '../components/WorkGrid.astro';
+import Principles from '../components/Principles.astro';
+import Skills from '../components/Skills.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import { getProjects, hasCv } from '../lib/site-files';
+
+const projects = await getProjects();
+
+// Pre-launch reminders, printed during every build until they're done.
+const missing = [
+  !site.email && 'site.email',
+  !site.linkedin && 'site.linkedin',
+  !site.github && 'site.github',
+  !hasCv && 'public/cv.pdf',
+  ...projects.filter((p) => !p.data.links.code).map((p) => `GitHub link for ${p.data.title}`),
+  ...projects.filter((p) => !p.data.links.demo).map((p) => `live link for ${p.data.title}`),
+].filter(Boolean);
+if (missing.length) console.warn(`\n[portfolio] Not filled in yet (shown as "soon" or hidden): ${missing.join(', ')}\n`);
+---
+<Base>
+  <div class="atmos" aria-hidden="true"></div>
+  <Nav />
+  <main id="main">
+    <Hero />
+    <AgentOpsWindow />
+    <ProofStrip />
+    <WorkGrid projects={projects} />
+    <Principles />
+    <Skills projects={projects} />
+    <About />
+    <Contact />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .atmos { position: absolute; inset: 0 0 auto; height: 900px; z-index: -1; pointer-events: none; overflow: hidden; }
+  .atmos::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: linear-gradient(var(--ln) 1px, transparent 1px), linear-gradient(90deg, var(--ln) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(70% 55% at 50% 0%, #000, transparent);
+    mask-image: radial-gradient(70% 55% at 50% 0%, #000, transparent);
+  }
+  .atmos::after {
+    content: ""; position: absolute; left: 10%; right: 10%; top: -300px; height: 700px;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(255, 120, 90, 0.22), transparent 70%);
+  }
+</style>

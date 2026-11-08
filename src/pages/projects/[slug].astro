@@ -1,0 +1,101 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Demo from '../../components/Demo.astro';
+import Contact from '../../components/Contact.astro';
+import Footer from '../../components/Footer.astro';
+import { getProjects, statusLabel, projectButtons, type Project } from '../../lib/site-files';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+interface Props { project: Project; next: Project }
+const { project, next } = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+const badge = statusLabel[d.status];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const measured = d.metricDate ? (() => { const [y, m] = d.metricDate.split('-'); return m ? `${months[Number(m) - 1]} ${y}` : y; })() : '';
+---
+<Base title={d.title} description={d.pitch}>
+  <Nav onHome={false} />
+  <main id="main" class="container">
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <header class="head">
+      <div class="title">
+        <h1>{d.title}</h1>
+        {badge && <span class="chip">{badge}</span>}
+      </div>
+      <p class="pitch">{d.pitch}</p>
+      {d.metric && <p class="metric"><span set:html={d.metric} />{measured && <span class="when"> · measured {measured}</span>}</p>}
+      <div class="row">
+        {projectButtons(d.links).map((b, i) => b.url
+          ? <a class:list={['btn', i === 0 ? 'btn-primary' : 'btn-ghost', 'ib']} href={b.url} target="_blank" rel="noopener"><Fragment set:html={b.icon} />{b.label}</a>
+          : <span class="btn btn-ghost ib soon" aria-disabled="true" title="Link coming soon"><Fragment set:html={b.icon} />{b.label}<em>soon</em></span>)}
+        {d.links.video && <a class="btn btn-ghost" href={d.links.video} target="_blank" rel="noopener">60-second video</a>}
+      </div>
+      <ul class="stack">{d.stack.map((s) => <li class="chip">{s}</li>)}</ul>
+    </header>
+
+    <div class="visual"><Demo type={d.demo} image={d.image} title={d.title} /></div>
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    {next.id !== project.id && (
+      <a class="next" href={`/projects/${next.id}/`}>
+        <span class="eyebrow">Next project</span>
+        <strong>{next.data.title} <span aria-hidden="true">→</span></strong>
+        <span class="np">{next.data.pitch}</span>
+      </a>
+    )}
+  </main>
+  <Contact />
+  <Footer />
+</Base>
+
+<style>
+  main { padding-top: 40px; }
+  .back { display: inline-flex; gap: 8px; color: var(--mu); text-decoration: none; font-size: 14px; }
+  .back:hover { color: var(--tx); }
+  .head { max-width: 760px; padding-top: 40px; display: grid; gap: 14px; }
+  .title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+  h1 { margin: 0; font-weight: 600; font-size: clamp(40px, 6vw, 72px); letter-spacing: -0.05em; line-height: 1; }
+  .pitch { margin: 0; font-size: clamp(18px, 2vw, 22px); color: var(--mu); line-height: 1.45; }
+  .metric { margin: 0; font: 500 14px var(--f-mono); }
+  .metric :global(b) { font-weight: 500; background: linear-gradient(90deg, var(--g1), var(--g2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .when { color: var(--dim); }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .ib { gap: 8px; }
+  .ib :global(svg) { width: 15px; height: 15px; flex: none; }
+  .soon { color: var(--dim); border-style: dashed; cursor: default; pointer-events: none; }
+  .soon em { font: 500 10px var(--f-mono); font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.06); }
+  .stack { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .visual { max-width: 760px; margin-top: 40px; }
+  .visual :global(.demo) { height: 230px; }
+
+  .prose { max-width: 720px; padding-top: 24px; font-size: 17px; line-height: 1.7; color: #d4d4d8; }
+  .prose :global(h2) { margin: 56px 0 14px; color: var(--tx); font-size: 26px; font-weight: 600; letter-spacing: -0.03em; scroll-margin-top: 84px; }
+  .prose :global(p) { margin: 0 0 16px; }
+  .prose :global(ul) { margin: 0 0 16px; padding-left: 20px; display: grid; gap: 10px; }
+  .prose :global(li::marker) { color: var(--g1); }
+  .prose :global(strong) { color: var(--tx); font-weight: 600; }
+  .prose :global(code) { font: 0.88em var(--f-mono); padding: 2px 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); color: var(--tx); }
+  .prose :global(table) { width: 100%; border-collapse: collapse; margin: 8px 0 18px; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .prose :global(th), .prose :global(td) { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--ln); }
+  .prose :global(th) { color: var(--dim); font: 500 12px var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; }
+  .prose :global(td:first-child) { color: var(--tx); font-weight: 500; }
+
+  .next { display: grid; gap: 6px; max-width: 720px; margin-top: 72px; padding: 24px; border-radius: 18px; border: 1px solid var(--ln); background: var(--s1); text-decoration: none; transition: border-color 0.2s; }
+  .next:hover { border-color: var(--ln2); }
+  .next .eyebrow { margin: 0; }
+  .next strong { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; }
+  .np { color: var(--mu); }
+</style>

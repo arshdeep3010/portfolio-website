@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars and fill in. terraform.tfvars is git-ignored.
+
+github_repo = "your-github-username/portfolio-website"
+
+# Optional
+# aws_region                  = "ap-south-1"
+# github_branch               = "main"
+# create_github_oidc_provider = false  # if the account already has the GitHub OIDC provider
+# github_sub_prefix           = "repo:owner@123/name@456"  # from: gh api repos/OWNER/NAME/actions/oidc/customization/sub

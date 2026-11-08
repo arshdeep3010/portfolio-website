@@ -1,0 +1,99 @@
+name: Deploy site
+
+# Every push to main builds the site and publishes it to S3 + CloudFront.
+# Changes that only touch infra/, the plan or the design-sample pages don't trigger a deploy.
+# (Project files in src/content/projects/*.md DO deploy: adding one is how a project goes live.)
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "infra/**"
+      - "PORTFOLIO_PLAN.md"
+      - "README.md"
+      - "*-concepts.html"
+      - "theme-samples.html"
+  workflow_dispatch:
+
+permissions:
+  id-token: write # lets the job request a GitHub OIDC token for AWS
+  contents: read
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+
+    steps:
+      - name: Check repository variables
+        run: |
+          missing=""
+          for v in AWS_ROLE_ARN AWS_REGION S3_BUCKET CLOUDFRONT_DISTRIBUTION_ID; do
+            if [ -z "${!v}" ]; then missing="$missing $v"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository variables:$missing. Set them from 'terraform output' (see infra/DEPLOY.md)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # The content schema runs during the build, so a broken project file fails here
+      # and never reaches the live site.
+      - name: Build
+        id: build
+        env:
+          ASTRO_TELEMETRY_DISABLED: "1"
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          npm ci
+          npm run build
+          echo "dir=dist" >> "$GITHUB_OUTPUT"
+
+      - name: Sign in to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload to S3
+        env:
+          SITE_DIR: ${{ steps.build.outputs.dir }}
+        run: |
+          set -euo pipefail
+          # Hashed build assets never change under the same name: cache for a year.
+          if [ -d "$SITE_DIR/_astro" ]; then
+            aws s3 sync "$SITE_DIR/_astro" "s3://$S3_BUCKET/_astro" \
+              --cache-control "public,max-age=31536000,immutable"
+          fi
+          # Everything else (HTML, CV, images): browsers re-check on each visit,
+          # CloudFront keeps a copy for a day and is cleared below.
+          # Old _astro files are kept so pages already open keep working.
+          aws s3 sync "$SITE_DIR" "s3://$S3_BUCKET" --delete \
+            --exclude "_astro/*" \
+            --cache-control "public,max-age=0,s-maxage=86400,must-revalidate"
+
+      - name: Clear CloudFront cache
+        run: |
+          id=$(aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths "/*" \
+            --query 'Invalidation.Id' --output text)
+          echo "Invalidation $id started"
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --id "$id"
+          echo "Live."

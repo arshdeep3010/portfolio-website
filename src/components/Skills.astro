@@ -1,0 +1,43 @@
+---
+import { skills } from '../data/site';
+import type { Project } from '../lib/site-files';
+
+interface Props { projects: Project[] }
+const { projects } = Astro.props;
+const byId = new Map(projects.map((p) => [p.id, p.data.title]));
+---
+<section id="skills" class="section container" aria-labelledby="skills-title">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Skills</p>
+      <h2 id="skills-title">Every skill points at its proof.</h2>
+    </div>
+    <p>No bars or percentages. Each group links to the projects where you can read the code.</p>
+  </div>
+  <div class="rows">
+    {skills.map((s) => (
+      <div class="row">
+        <h3>{s.group}</h3>
+        <ul class="items">{s.items.map((it) => <li>{it}</li>)}</ul>
+        <p class="proof">
+          {s.proof.filter((id) => byId.has(id)).map((id) => <a href={`/projects/${id}/`}>{byId.get(id)}</a>)}
+        </p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .rows { border-top: 1px solid var(--ln); }
+  .row { display: grid; grid-template-columns: 220px minmax(0, 1fr) 260px; gap: 12px 24px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--ln); }
+  h3 { margin: 0; font-size: 16px; font-weight: 600; }
+  .items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .items li { font-size: 13.5px; padding: 4px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--ln); }
+  .proof { margin: 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 14px; font-size: 13px; }
+  .proof a { color: var(--mu); text-decoration: none; border-bottom: 1px solid var(--ln2); }
+  .proof a:hover { color: var(--tx); border-color: var(--g1); }
+  @media (max-width: 860px) {
+    .row { grid-template-columns: 1fr; }
+    .proof { justify-content: flex-start; }
+  }
+</style>

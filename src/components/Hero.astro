@@ -1,0 +1,40 @@
+---
+import { site } from '../data/site';
+import { hasCv } from '../lib/site-files';
+
+const lead = site.headline.lead.split(' ');
+const accent = site.headline.accent.split(' ');
+---
+<section class="hero container" aria-labelledby="hero-title">
+  <p class="pill"><i aria-hidden="true"></i>{site.availability} · {site.location}</p>
+  <h1 id="hero-title">
+    {lead.map((w, i) => <><span class="w" style={`--d:${i}`}>{w}</span>{' '}</>)}
+    {accent.map((w, i) => <><span class="w" style={`--d:${lead.length + i}`}><span class="serif grad-text">{w}</span></span>{' '}</>)}
+  </h1>
+  <p class="sub">{site.sub}</p>
+  <div class="row">
+    <a class="btn btn-primary" href="#work">See the work</a>
+    {hasCv
+      ? <a class="btn btn-ghost" href={site.cvPath} download>Download CV</a>
+      : <a class="btn btn-ghost" href="#contact">Get in touch</a>}
+  </div>
+</section>
+
+<style>
+  .hero { padding-top: clamp(56px, 9vw, 104px); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 9px; margin: 0 0 28px;
+    padding: 6px 14px 6px 10px; border-radius: 999px; border: 1px solid var(--ln2);
+    background: rgba(255, 255, 255, 0.03); font-size: 13px; color: var(--mu);
+  }
+  .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.15); }
+  h1 {
+    margin: 0 0 24px; max-width: 15ch;
+    font-weight: 600; font-size: clamp(44px, 7.4vw, 96px); line-height: 0.97; letter-spacing: -0.055em;
+  }
+  h1 .serif { padding-right: 0.06em; }
+  .w { display: inline-block; animation: rise 0.9s var(--ease) both; animation-delay: calc(var(--d) * 70ms); }
+  .sub { margin: 0 0 32px; max-width: 58ch; font-size: clamp(17px, 1.6vw, 20px); line-height: 1.5; color: var(--mu); animation: rise 0.9s 0.5s var(--ease) both; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; animation: rise 0.9s 0.65s var(--ease) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
+</style>

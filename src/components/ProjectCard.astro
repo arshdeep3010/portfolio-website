@@ -1,0 +1,77 @@
+---
+import Demo from './Demo.astro';
+import { statusLabel, projectButtons, type Project } from '../lib/site-files';
+
+interface Props { project: Project }
+const { project } = Astro.props;
+const d = project.data;
+const href = `/projects/${project.id}/`;
+const badge = statusLabel[d.status];
+const buttons = projectButtons(d.links);
+---
+<article class="card" data-tags={d.tags.join('|')}>
+  <Demo type={d.demo} image={d.image} title={d.title} />
+  <div class="info">
+    <div class="top">
+      <h3><a href={href}>{d.title}</a></h3>
+      {badge && <span class:list={['chip', d.status]}>{badge}</span>}
+    </div>
+    <p>{d.pitch}</p>
+    {d.metric && <p class="m" set:html={d.metric} />}
+    <div class="btns">
+      {buttons.map((b) => b.url
+        ? <a class="pb" href={b.url} target="_blank" rel="noopener"><Fragment set:html={b.icon} />{b.label}</a>
+        : <span class="pb soon" aria-disabled="true" title="Link coming soon"><Fragment set:html={b.icon} />{b.label}<em>soon</em></span>)}
+    </div>
+    <div class="foot">
+      <span class="stack">{d.stack.join(' · ')}</span>
+      <span class="links">
+        {d.links.video && <a href={d.links.video} target="_blank" rel="noopener">Video</a>}
+        <a href={href} class="cs">Case study <span aria-hidden="true">→</span></a>
+      </span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card { position: relative; border-radius: 18px; background: var(--s1); border: 1px solid var(--ln); padding: 14px; display: grid; gap: 14px; align-content: start; overflow: hidden; transition: border-color 0.25s; }
+  .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 140, 100, 0.1), transparent 60%); }
+  .card[hidden] { display: none; }
+  .card:hover { border-color: var(--ln2); }
+  .card:hover::before { opacity: 1; }
+  .info { display: grid; gap: 6px; padding: 0 4px 4px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  h3 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.02em; }
+  h3 a { text-decoration: none; }
+  h3 a::after { content: ""; position: absolute; inset: 0; } /* whole card is clickable */
+  .chip.live { color: var(--ok); border-color: rgba(74, 222, 128, 0.45); }
+  .chip.building { border-style: dashed; }
+  p { margin: 0; color: var(--mu); font-size: 14.5px; line-height: 1.5; }
+  .m { font: 500 12.5px var(--f-mono); color: var(--tx); }
+  .m :global(b) { font-weight: 500; background: linear-gradient(90deg, var(--g1), var(--g2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .btns { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .pb { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 500; text-decoration: none;
+    color: var(--tx); background: var(--s2); border: 1px solid var(--ln2); transition: border-color 0.2s, background 0.2s, transform 0.2s var(--ease); }
+  .pb:first-child:not(.soon) { color: #18080a; border-color: transparent; background: linear-gradient(90deg, var(--g1), var(--g2)); }
+  a.pb:hover { transform: translateY(-1px); border-color: rgba(255, 255, 255, 0.3); }
+  a.pb:active { transform: scale(0.97); }
+  .pb :global(svg) { width: 14px; height: 14px; flex: none; }
+  .pb.soon { color: var(--dim); background: transparent; border-style: dashed; cursor: default; }
+  .pb em { font: 500 10px var(--f-mono); font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.06); }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 14px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--ln); }
+  .stack { font: 11.5px var(--f-mono); color: var(--dim); }
+  .links { position: relative; z-index: 1; display: flex; gap: 14px; font-size: 13.5px; font-weight: 500; }
+  .links a { text-decoration: none; color: var(--mu); transition: color 0.2s; }
+  .links a:hover, .links .cs { color: var(--tx); }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
+    card.addEventListener('pointermove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
+</script>

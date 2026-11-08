@@ -1,0 +1,63 @@
+---
+import { proof, proofNote } from '../data/site';
+---
+<section class="container proof" aria-label="Measured results">
+  <ul>
+    {proof.map((p) => (
+      <li>
+        <a href={p.href}>
+          <strong><span class="grad-text" data-count={p.value}>{p.value}</span>{p.unit}</strong>
+          <span class="l">{p.label}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="note">{proofNote}</p>
+</section>
+
+<style>
+  .proof { padding-top: 80px; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ln); border-bottom: 1px solid var(--ln); }
+  li + li { border-left: 1px solid var(--ln); }
+  a { display: block; height: 100%; padding: 26px 22px 26px 0; text-decoration: none; transition: background-color 0.2s; }
+  li + li a { padding-left: 24px; }
+  a:hover strong { color: #fff; }
+  strong { display: block; font-weight: 600; font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -0.045em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .l { display: block; margin-top: 8px; font-size: 13.5px; color: var(--mu); line-height: 1.45; }
+  .note { margin: 12px 0 0; font: 12px var(--f-mono); color: var(--dim); }
+  @media (max-width: 900px) {
+    ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    li:nth-child(3) { border-left: 0; }
+    li:nth-child(n + 3) { border-top: 1px solid var(--ln); }
+    li:nth-child(3) a { padding-left: 0; }
+  }
+  @media (max-width: 420px) {
+    ul { grid-template-columns: 1fr; }
+    li + li { border-left: 0; border-top: 1px solid var(--ln); }
+    li + li a { padding-left: 0; }
+  }
+</style>
+
+<script>
+  // Count up once, the first time the strip scrolls into view.
+  const els = Array.from(document.querySelectorAll<HTMLElement>('[data-count]'));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (els.length && !reduce) {
+    const run = () => els.forEach((el) => {
+      const target = Number(el.dataset.count);
+      if (!target) return;
+      const dp = (el.dataset.count!.split('.')[1] || '').length; // keep "5.5" as 5.5
+      const t0 = performance.now();
+      const step = (now: number) => {
+        const k = Math.min(1, (now - t0) / 1200), e = 1 - Math.pow(1 - k, 3);
+        el.textContent = (target * e).toFixed(dp);
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); run(); }
+    }, { threshold: 0.4 });
+    io.observe(els[0].closest('section')!);
+  }
+</script>

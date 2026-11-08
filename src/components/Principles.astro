@@ -1,0 +1,32 @@
+---
+import { principles } from '../data/site';
+---
+<section id="how" class="section container" aria-labelledby="how-title">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">How I build</p>
+      <h2 id="how-title">AI is never <span class="serif grad-text">the last word.</span></h2>
+    </div>
+    <p>Rules, tests, gates or a person decide. The same three habits run through every project.</p>
+  </div>
+  <ol class="grid">
+    {principles.map((p, i) => (
+      <li>
+        <span class="n">0{i + 1}</span>
+        <h3>{p.title}</h3>
+        <p>{p.body}</p>
+        <a href={p.href}>See the proof <span aria-hidden="true">→</span></a>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 16px; }
+  li { display: grid; gap: 10px; align-content: start; padding: 24px; border-radius: 18px; border: 1px solid var(--ln); background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent); }
+  .n { font: 500 12px var(--f-mono); color: var(--g1); }
+  h3 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -0.025em; }
+  p { margin: 0; color: var(--mu); font-size: 15px; }
+  a { margin-top: 4px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--tx); }
+  a:hover { color: var(--g1); }
+</style>

@@ -1,0 +1,24 @@
+# Build output
+dist/
+.astro/
+node_modules/
+
+# Terraform: state and real variable values stay on your machine
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/*.tfvars
+!infra/*.tfvars.example
+infra/crash.log
+infra/*.tfplan
+
+# Local env and OS files
+.env
+.env.*
+.DS_Store
+Thumbs.db
+
+# Private planning notes and design drafts: kept locally, not published
+PORTFOLIO_PLAN.md
+*-concepts.html
+theme-samples.html

@@ -1,0 +1,220 @@
+---
+// The signature moment: a live illustration of one AgentOps SDLC run.
+// It's labelled as an illustration; the real measured numbers sit right under it.
+const steps = ['Requirements', 'Design', 'Tests first', 'Build', '9 quality gates', 'Review', 'Pull request'];
+---
+<div class="stage3d container" aria-labelledby="win-title">
+  <figure class="win" data-win>
+    <div class="bar">
+      <i></i><i></i><i></i>
+      <span class="t" id="win-title">AgentOps · SDLC run · coupon feature for ShopLite</span>
+      <span class="tag"><b aria-hidden="true"></b>illustration</span>
+    </div>
+    <div class="body">
+      <div class="steps">
+        <h3>Pipeline</h3>
+        <ul>{steps.map((s) => <li><i aria-hidden="true"></i>{s}</li>)}</ul>
+      </div>
+      <div class="lanes">
+        <h3>Workers</h3>
+        <div class="lane" data-lane="0"><b>w1</b><div class="track"><div class="fill"></div><span>sdlc · requirements</span></div></div>
+        <div class="lane" data-lane="1"><b>w2</b><div class="track"><div class="fill"></div><span>sdlc · build (waiting)</span></div></div>
+        <div class="lane" data-lane="2"><b>w3</b><div class="track"><div class="fill"></div><span>invoice workflow</span></div></div>
+        <div class="lane idle" data-lane="3"><b>w4</b><div class="track"><div class="fill"></div><span>idle · waiting for a lease</span></div></div>
+        <div class="meter">
+          <span>steps <b data-w="steps">0 / 7</b></span>
+          <span>gates <b data-w="gates">0 / 9</b></span>
+          <span class="z">side effects repeated <b>0</b></span>
+        </div>
+      </div>
+      <div class="log" data-w="log" aria-live="off"><h3>Event log</h3></div>
+    </div>
+    <figcaption class="sr-only">An animated illustration of an AgentOps run: pipeline steps complete, worker w2 is killed mid-build, w4 takes over its job, and all 9 quality gates pass.</figcaption>
+  </figure>
+  <p class="note">
+    <span>The window shows the flow.</span>
+    <span>Measured on the real engine: <b>500 runs · 435 random worker kills · 0 lost · 1.9 s median takeover</b></span>
+  </p>
+</div>
+
+<style>
+  .stage3d { perspective: 1800px; padding-top: 72px; }
+  .win {
+    position: relative; margin: 0; border-radius: 16px;
+    background: linear-gradient(180deg, var(--s2), var(--s1));
+    box-shadow: inset 0 0 0 1px var(--ln), 0 70px 140px -50px rgba(255, 94, 126, 0.38);
+    transform: rotateX(var(--tilt, 14deg)); transform-origin: 50% 0;
+    animation: winIn 1.1s 0.75s var(--ease) both;
+  }
+  .win::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 17px; padding: 1px; pointer-events: none;
+    background: conic-gradient(from var(--ang), transparent 0 62%, var(--g1) 76%, var(--g2) 86%, transparent 96%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: spin 7s linear infinite;
+  }
+  @keyframes spin { to { --ang: 360deg; } }
+  @keyframes winIn { from { opacity: 0; translate: 0 24px; } }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--ln); font: 12px var(--f-mono); color: var(--dim); }
+  .bar i { width: 9px; height: 9px; border-radius: 50%; background: #2a2a30; }
+  .bar .t { margin-left: 8px; color: var(--mu); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar .tag { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; color: var(--mu); white-space: nowrap; }
+  .bar .tag b { width: 6px; height: 6px; border-radius: 50%; background: var(--g2); animation: blink 1.4s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  .body { display: grid; grid-template-columns: 210px minmax(0, 1fr) 300px; min-height: 330px; }
+  h3 { margin: 0 0 10px; font: 500 11px var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+  .steps { padding: 16px 14px; border-right: 1px solid var(--ln); }
+  .steps ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .steps li { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 8px; font-size: 13px; color: var(--dim); transition: background-color 0.3s, color 0.3s; }
+  .steps li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #3a3a42; flex: none; display: grid; place-items: center; font-style: normal; font-size: 10px; }
+  .steps li:global(.run) { background: rgba(255, 162, 74, 0.08); color: var(--tx); }
+  .steps li:global(.run) i { border-color: var(--g1); border-top-color: transparent; animation: rot 0.8s linear infinite; }
+  .steps li:global(.done) { color: var(--mu); }
+  .steps li:global(.done) i { border-color: var(--ok); background: var(--ok); color: #06210f; }
+  .steps li:global(.done) i::after { content: "✓"; font-weight: 700; }
+  @keyframes rot { to { transform: rotate(360deg); } }
+  .lanes { padding: 16px 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+  .lane { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: center; }
+  .lane b { font: 500 12px var(--f-mono); color: var(--mu); }
+  .track { position: relative; height: 30px; border-radius: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--ln); overflow: hidden; }
+  .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, rgba(255, 162, 74, 0.18), rgba(255, 94, 126, 0.28)); border-right: 2px solid var(--g2); }
+  .track span { position: relative; display: block; padding: 0 10px; line-height: 28px; font: 12px var(--f-mono); color: var(--tx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lane:global(.dead) .track { border-color: rgba(248, 113, 113, 0.5); background: rgba(248, 113, 113, 0.07); }
+  .lane:global(.dead) .fill { background: rgba(248, 113, 113, 0.18); border-color: var(--bad); }
+  .lane:global(.dead) b { color: var(--bad); }
+  .lane:global(.idle) .track span { color: var(--dim); }
+  .lane:global(.took) .track { border-color: rgba(251, 191, 36, 0.5); }
+  .meter { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 6px; font: 12px var(--f-mono); color: var(--mu); }
+  .meter b { color: var(--tx); font-weight: 500; }
+  .meter .z b { color: var(--ok); }
+  .log { border-left: 1px solid var(--ln); padding: 16px 14px; display: grid; align-content: start; gap: 2px; min-width: 0; }
+  .log :global(p) { margin: 0; padding: 5px 0; font: 12px/1.45 var(--f-mono); color: var(--mu); border-bottom: 1px dashed var(--ln); animation: logIn 0.4s var(--ease) both; }
+  .log :global(p em) { font-style: normal; color: var(--dim); margin-right: 8px; }
+  .log :global(p.bad) { color: var(--bad); }
+  .log :global(p.warn) { color: var(--warn); }
+  .log :global(p.ok) { color: var(--ok); }
+  @keyframes logIn { from { opacity: 0; transform: translateY(6px); } }
+  .note { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 18px 0 0; font: 12.5px var(--f-mono); color: var(--dim); }
+  .note b { color: var(--mu); font-weight: 500; }
+
+  @media (max-width: 900px) {
+    .stage3d { perspective: none; padding-top: 48px; }
+    .win { transform: none; }
+    .body { grid-template-columns: 1fr; }
+    .steps { border-right: 0; border-bottom: 1px solid var(--ln); }
+    .steps ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .log { border-left: 0; border-top: 1px solid var(--ln); }
+  }
+</style>
+
+<style is:global>
+  @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+</style>
+
+<script>
+  const win = document.querySelector<HTMLElement>('[data-win]');
+  if (win) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const steps = Array.from(win.querySelectorAll<HTMLLIElement>('.steps li'));
+    const lanes = Array.from(win.querySelectorAll<HTMLElement>('.lane'));
+    const log = win.querySelector<HTMLElement>('[data-w="log"]')!;
+    const stepN = win.querySelector<HTMLElement>('[data-w="steps"]')!;
+    const gatesEl = win.querySelector<HTMLElement>('[data-w="gates"]')!;
+    const label = (i: number, text: string) => { lanes[i].querySelector('span')!.textContent = text; };
+
+    type Ev = [number, string, number, string | number, string, string];
+    const EV: Ev[] = [
+      [0.2, 'step', 0, 'run', 'w1 leased "requirements" · lease 30 s', ''],
+      [1.6, 'step', 0, 'done', 'acceptance criteria written', ''],
+      [1.6, 'step', 1, 'run', '', ''],
+      [3.0, 'step', 1, 'done', 'design approved', ''],
+      [3.0, 'step', 2, 'run', 'tests written first · failing, then locked', ''],
+      [4.6, 'step', 2, 'done', '', ''],
+      [4.6, 'step', 3, 'run', 'w2 leased "build" · attempt 1', ''],
+      [6.0, 'kill', 1, '', 'w2 killed mid-build', 'bad'],
+      [7.3, 'take', 1, 3, 'lease expired · w2 fenced · w4 took over', 'warn'],
+      [8.8, 'step', 3, 'done', 'build finished on w4', ''],
+      [8.8, 'step', 4, 'run', 'gates running in a Docker sandbox', ''],
+      [11.0, 'step', 4, 'done', '9 / 9 gates passed', 'ok'],
+      [11.0, 'step', 5, 'run', '', ''],
+      [12.2, 'step', 5, 'done', 'review approved', ''],
+      [12.2, 'step', 6, 'run', '', ''],
+      [13.2, 'step', 6, 'done', 'PR ready · traceability matrix attached', 'ok'],
+    ];
+    const LOOP = 16.5;
+    let lane = [] as { busy: boolean; p: number; sp: number }[];
+    let evIdx = 0, gates = 0, lastCycle = -1;
+
+    const reset = () => {
+      steps.forEach((li) => (li.className = ''));
+      lanes.forEach((l, i) => (l.className = 'lane' + (i === 3 ? ' idle' : '')));
+      label(0, 'sdlc · requirements'); label(1, 'sdlc · build (waiting)'); label(3, 'idle · waiting for a lease');
+      lane = [{ busy: true, p: 0, sp: 0.32 }, { busy: false, p: 0, sp: 0.42 }, { busy: true, p: 0.4, sp: 0.22 }, { busy: false, p: 0, sp: 0.45 }];
+      log.querySelectorAll('p').forEach((p) => p.remove());
+      evIdx = 0; gates = 0; stepN.textContent = '0 / 7'; gatesEl.textContent = '0 / 9';
+    };
+    const say = (text: string, cls: string, t: number) => {
+      if (!text) return;
+      const p = document.createElement('p');
+      if (cls) p.className = cls;
+      const s = Math.floor(t);
+      const em = document.createElement('em');
+      em.textContent = `00:${String(s).padStart(2, '0')}`;
+      p.append(em, text);
+      log.appendChild(p);
+      const all = log.querySelectorAll('p');
+      if (all.length > 7) all[0].remove();
+    };
+    const apply = (ev: Ev, t: number) => {
+      const [, kind, i, v] = ev;
+      if (kind === 'step') {
+        steps[i].className = String(v);
+        if (v === 'done') stepN.textContent = `${win.querySelectorAll('.steps li.done').length} / 7`;
+        if (i === 2 && v === 'run') { label(0, 'sdlc · tests first'); lane[0].p = 0; }
+        if (i === 3 && v === 'run') { lane[1].busy = true; lane[1].p = 0; label(1, 'sdlc · build'); }
+        if (i === 3 && v === 'done') { lanes[3].className = 'lane'; label(3, 'sdlc · gates'); lane[3].busy = true; lane[3].p = 0; }
+      }
+      if (kind === 'kill') { lane[1].busy = false; lanes[1].className = 'lane dead'; label(1, 'killed · lease will expire'); }
+      if (kind === 'take') { lanes[3].className = 'lane took'; label(3, 'sdlc · build (took over from w2)'); lane[3].busy = true; lane[3].p = lane[1].p; }
+      say(ev[4], ev[5], t);
+    };
+
+    reset();
+    if (reduce) {
+      EV.forEach((ev) => apply(ev, ev[0]));
+      gatesEl.textContent = '9 / 9';
+      win.style.setProperty('--tilt', '0deg');
+    } else {
+      let visible = true, start = performance.now(), raf = 0;
+      const tick = (now: number) => {
+        raf = requestAnimationFrame(tick);
+        if (!visible) return;
+        const t = Math.max(0, (now - start) / 1000);
+        const cycle = Math.floor(t / LOOP), lt = t - cycle * LOOP;
+        if (cycle !== lastCycle) { lastCycle = cycle; reset(); }
+        while (evIdx < EV.length && EV[evIdx][0] <= lt) { apply(EV[evIdx], lt); evIdx++; }
+        if (steps[4].className === 'run') {
+          const g = Math.min(9, Math.floor(((lt - 8.8) / 2.2) * 9) + 1);
+          if (g !== gates) { gates = g; gatesEl.textContent = `${g} / 9`; }
+        }
+        if (steps[4].className === 'done' && gates !== 9) { gates = 9; gatesEl.textContent = '9 / 9'; }
+        lanes.forEach((l, i) => {
+          const s = lane[i];
+          if (s.busy) s.p = (s.p + s.sp / 60) % 1;
+          (l.querySelector('.fill') as HTMLElement).style.width = `${(s.busy || l.classList.contains('dead') ? s.p * 100 : 0).toFixed(1)}%`;
+        });
+      };
+      raf = requestAnimationFrame(tick);
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(win);
+
+      // The window lies back in 3D and flattens as it scrolls into view.
+      const onScroll = () => {
+        const r = win.getBoundingClientRect(), vh = innerHeight;
+        const k = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.85)));
+        win.style.setProperty('--tilt', `${(16 * (1 - k)).toFixed(2)}deg`);
+      };
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+  }
+</script>
