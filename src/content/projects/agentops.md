@@ -10,7 +10,7 @@ metric: "<b>0 lost runs</b> in 500 · 435 random kills"
 metricDate: "2026-11"
 demo: chaos
 links:
-  code: ""
+  code: "https://github.com/arshdeep3010/agentops"
   demo: "https://ncf7tzviny6x7qkw7aaxk7xszq0lvnbk.lambda-url.ap-south-1.on.aws/"
   video: ""
 video:
