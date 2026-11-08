@@ -3,7 +3,7 @@ title: AgentOps
 pitch: Agent workflows that survive crashes, wait for people, and ship code through SDLC gates.
 order: 1
 featured: true
-status: code
+status: live
 tags: [Agents, Backend]
 stack: [Python, FastAPI, Postgres, Docker, LLM]
 metric: "<b>0 lost runs</b> in 500 · 435 random kills"
@@ -11,8 +11,13 @@ metricDate: "2026-11"
 demo: chaos
 links:
   code: ""
-  demo: ""
+  demo: "https://ncf7tzviny6x7qkw7aaxk7xszq0lvnbk.lambda-url.ap-south-1.on.aws/"
   video: ""
+video:
+  src: /media/agentops-demo.mp4
+  poster: /media/agentops-demo-poster.jpg
+  length: 3 min
+  caption: "A real run on 7 Nov 2026, nothing pre-recorded: one sentence in, a coupon feature for ShopLite out. Requirements, design, tests first, a failed check sent back to the AI, review, and three human approvals, merged in 5.5 minutes."
 ---
 
 ## The problem

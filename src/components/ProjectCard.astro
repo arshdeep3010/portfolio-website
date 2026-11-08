@@ -26,7 +26,9 @@ const buttons = projectButtons(d.links);
     <div class="foot">
       <span class="stack">{d.stack.join(' · ')}</span>
       <span class="links">
-        {d.links.video && <a href={d.links.video} target="_blank" rel="noopener">Video</a>}
+        {d.video
+          ? <a href={`${href}#video`}>Video</a>
+          : d.links.video && <a href={d.links.video} target="_blank" rel="noopener">Video</a>}
         <a href={href} class="cs">Case study <span aria-hidden="true">→</span></a>
       </span>
     </div>

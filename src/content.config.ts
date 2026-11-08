@@ -21,6 +21,15 @@ const projects = defineCollection({
       metricDate: z.string().default(''), // when it was measured, e.g. 2026-11
       demo: z.enum(['chaos', 'fit', 'health', 'vibe', 'none']).default('none'),
       image: z.string().default(''), // /media/<file> for projects without a live demo
+      // A walkthrough video hosted with the site, shown in a player on the case-study page.
+      video: z
+        .object({
+          src: z.string().regex(/^\/media\/.+\.mp4$/, 'Put the file in public/media/ and use /media/<name>.mp4'),
+          poster: z.string().default(''),
+          caption: z.string().default(''),
+          length: z.string().default(''), // e.g. "3 min", shown on the button
+        })
+        .optional(),
       links: z.object({ code: url, demo: url, video: url }).default({}),
     })
     .superRefine((p, ctx) => {
