@@ -31,6 +31,8 @@ const projects = defineCollection({
         })
         .optional(),
       links: z.object({ code: url, demo: url, video: url }).default({}),
+      // Shown under the live demo buttons, e.g. when the demo uses pre-written AI replies.
+      demoNote: z.string().default(''),
     })
     .superRefine((p, ctx) => {
       if (p.metric && !p.metricDate) {

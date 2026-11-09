@@ -55,7 +55,7 @@ export const skills = [
   { group: 'GenAI', items: ['RAG', 'pgvector', 'Embeddings', 'Structured outputs', 'LangGraph', 'Evals', 'Grounding'], proof: ['fitcheck', 'health-claim-agent'] },
   { group: 'Agents and reliability', items: ['Durable workflows', 'Leases and fencing', 'Idempotency', 'Human in the loop', 'Sandboxing'], proof: ['agentops'] },
   { group: 'Data', items: ['PostgreSQL (SKIP LOCKED, LISTEN/NOTIFY)', 'pgvector', 'DynamoDB'], proof: ['agentops', 'fitcheck'] },
-  { group: 'Cloud and DevOps', items: ['Docker', 'GitHub Actions', 'AWS Lambda', 'EventBridge', 'Terraform', 'S3 + CloudFront'], proof: ['health-claim-agent'] },
+  { group: 'Cloud and DevOps', items: ['Docker', 'GitHub Actions', 'AWS Lambda', 'EventBridge', 'Terraform', 'S3 + CloudFront'], proof: ['agentops', 'health-claim-agent'] },
   { group: 'Frontend', items: ['React + TypeScript', 'Vanilla JS UIs with SSE', 'Astro'], proof: ['health-claim-agent', 'vibe-audit'] },
 ];
 

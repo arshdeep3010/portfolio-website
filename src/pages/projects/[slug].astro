@@ -42,6 +42,7 @@ const measured = d.metricDate ? (() => { const [y, m] = d.metricDate.split('-');
         {d.video && <a class="btn btn-ghost ib" href="#video"><Fragment set:html={ICON_PLAY} />Watch the video{d.video.length && <span class="len">{d.video.length}</span>}</a>}
         {!d.video && d.links.video && <a class="btn btn-ghost" href={d.links.video} target="_blank" rel="noopener">Video</a>}
       </div>
+      {d.links.demo && d.demoNote && <p class="demo-note">{d.demoNote}</p>}
       <ul class="stack">{d.stack.map((s) => <li class="chip">{s}</li>)}</ul>
     </header>
 
@@ -55,6 +56,7 @@ const measured = d.metricDate ? (() => { const [y, m] = d.metricDate.split('-');
           <span class="eyebrow">Watch it work{d.video.length && ` · ${d.video.length}`}</span>
           {d.video.caption && <p>{d.video.caption}</p>}
           {d.links.demo && <a class="btn btn-ghost" href={d.links.demo} target="_blank" rel="noopener">Try it yourself <span aria-hidden="true">↗</span></a>}
+          {d.links.demo && d.demoNote && <p class="demo-note">{d.demoNote}</p>}
         </div>
       </section>
     )}
@@ -89,6 +91,8 @@ const measured = d.metricDate ? (() => { const [y, m] = d.metricDate.split('-');
   .metric :global(b) { font-weight: 500; background: linear-gradient(90deg, var(--g1), var(--g2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .when { color: var(--dim); }
   .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .demo-note { margin: 0; max-width: 62ch; color: var(--dim); font-size: 13.5px; line-height: 1.55; }
+  .vtext .demo-note { font-size: 13.5px; color: var(--dim); }
   .ib { gap: 8px; }
   .ib :global(svg) { width: 15px; height: 15px; flex: none; }
   .soon { color: var(--dim); border-style: dashed; cursor: default; pointer-events: none; }

@@ -5,7 +5,7 @@ order: 1
 featured: true
 status: live
 tags: [Agents, Backend]
-stack: [Python, FastAPI, Postgres, Docker, LLM]
+stack: [Python, FastAPI, Postgres, Docker, AWS Lambda, Terraform, LLM]
 metric: "<b>0 lost runs</b> in 500 · 435 random kills"
 metricDate: "2026-11"
 demo: chaos
@@ -13,11 +13,12 @@ links:
   code: "https://github.com/arshdeep3010/agentops"
   demo: "https://ncf7tzviny6x7qkw7aaxk7xszq0lvnbk.lambda-url.ap-south-1.on.aws/"
   video: ""
+demoNote: "The live demo uses pre-written AI replies for one task, so it stays free. The engine, sandbox, checks, approvals and shop are real. To type your own task, run it from GitHub with your own model key."
 video:
   src: /media/agentops-demo.mp4
   poster: /media/agentops-demo-poster.jpg
   length: 3 min
-  caption: "A real run on 7 Nov 2026, nothing pre-recorded: one sentence in, a coupon feature for ShopLite out. Requirements, design, tests first, a failed check sent back to the AI, review, and three human approvals, merged in 5.5 minutes."
+  caption: "A real live-model run on 7 Nov 2026 (model wait time sped up): one sentence in, a coupon feature for ShopLite out. Requirements, design, tests first, a failed check sent back to the AI, review, and three human approvals, merged in 5.5 minutes."
 ---
 
 ## The problem
@@ -28,21 +29,23 @@ AI agents that run many steps die halfway through. When they're retried, they re
 
 - **A workflow engine on Postgres alone.** An event log that is the source of truth, a `SKIP LOCKED` job queue, worker leases with heartbeats and fencing tokens, idempotent tool calls, approvals that hold no worker while they wait, budgets, cancel, and replay from any step. Live updates reach the browser over SSE, woken by `LISTEN/NOTIFY`.
 - **A 12-step SDLC pipeline on top.** Requirements, then design (each approved by a person), then tests written first, then build, looping through 9 quality gates, then an AI review, then a pull request with a traceability matrix, then a merge a person approves.
-- **Rules that stop the model cheating.** Every acceptance criterion needs a test that fails before any code exists, and a test with no assert is rejected before it runs. Then the tests are hashed and locked: any change to them fails the run. Changing files outside the approved design fails the scope gate.
+- **Rules that stop the model cheating.** Every acceptance criterion needs a test that fails before any code exists, and a test with no assert is rejected before it runs. Then the tests are hashed and locked: any change to them fails a check and sends the build back. Changing files outside the approved design fails the scope gate.
 - **A locked-down Docker sandbox** for AI-written code: no network, read-only, 512 MB, 1 CPU, non-root, hard timeout. The gates are pytest, test lock, scope lock, protected files, secrets, syntax, changed-line coverage of at least 80%, ruff, mypy and bandit.
+- **Deployed serverless on AWS.** Four Lambda functions: the API with live streaming, a worker that starts only when there is work, and a sandbox and shop preview in a network with no internet route. Terraform sets it all up, and GitHub Actions tests every push, then deploys it with no AWS keys stored in GitHub.
 - **A live UI** for one real task: adding discount coupons to ShopLite, a small FastAPI shop. You see the shop before, watch each step tick, read every document, approve, and open the new shop after the merge.
 
 ## The hard parts
 
 - **Late results from a dead worker.** A worker can be killed, lose its lease, and still finish its step later. Fencing tokens make the database reject that stale write, so only the worker that took over counts.
 - **Loops without cycles.** "Build until the gates pass" is a loop, but the workflow is a DAG. A failed gate rewinds an earlier step with the evidence as feedback, inside a loop budget, so a stuck build stops and asks a person instead of running forever.
-- **Tests that checked nothing.** On the first live run the model wrote 5 tests whose body was only `pass`, and the red check rejected them 4 rounds in a row. Now requirements must use data that exists in the repo, and a test with no assert is refused by name before it runs.
+- **Tests that checked nothing.** On the first live ShopLite run the model wrote 5 tests whose body was only `pass`, and the red check rejected them 4 rounds in a row. Now requirements must use data that exists in the repo, and a test with no assert is refused by name before it runs.
 - **A reviewer that flip-flopped.** The AI reviewer invented a crash the tests disproved, and later repeated the same comments word for word. It now sees its own earlier rounds, a blocking comment needs a concrete failing case, and repeated comments go to the person at the merge approval.
 
 ## Results
 
 - **Chaos test (4 Nov 2026):** 500 runs while 3 worker processes were hard-killed at random, 435 times. 0 runs lost, 0 duplicate side effects (the idempotency key deduped all 59 repeated requests), median takeover 1.9 s.
 - **Live ShopLite run (7 Nov 2026):** a coupon feature from requirements to merged code in 5.5 minutes on a free NVIDIA model. 9 tests failed first and were locked, build 1 failed a locked test, build 3 passed all 9 checks, and the merged shop charged the right total.
+- **Live on AWS (8 Nov 2026):** a full run on the hosted demo (pre-written AI replies), 12 of 12 steps and 3 approvals, merged in 1 min 48 s including the time spent approving.
 - **Earlier live run (4 Nov 2026):** a refunds task to a pull request through all 9 gates in 4.0 minutes, with 100% of changed lines covered.
 
 These are single debugging runs, not a benchmark. The chaos test used a fake model, so it measures durability, not throughput.
