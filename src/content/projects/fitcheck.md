@@ -3,15 +3,15 @@ title: FitCheck
 pitch: Paste a job description; every requirement is checked against real code, or marked unverified.
 order: 2
 featured: true
-status: code
+status: live
 tags: [GenAI]
 stack: [LangGraph, FastAPI, RAG, pgvector, Evals]
 metric: "<b>100% accuracy</b> · 0% false claims"
 metricDate: "2026-11"
 demo: fit
 links:
-  code: ""
-  demo: ""
+  code: "https://github.com/arshdeep3010/fitcheck"
+  demo: "https://f7yxpsphemzbymhpc5uu6qzz4q0oilnj.lambda-url.ap-south-1.on.aws/"
   video: ""
 ---
 

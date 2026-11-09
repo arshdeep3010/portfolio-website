@@ -3,15 +3,15 @@ title: VibeAudit
 pitch: Finds the bugs that AI-written code ships with, before that code reaches real users.
 order: 4
 featured: true
-status: code
+status: live
 tags: [GenAI, Backend]
 stack: [FastAPI, LLM, SSE, Docker, bandit, semgrep]
 metric: "<b>Every planted bug</b> found in 39.8 s · <b>2 model calls</b>"
 metricDate: "2026-11"
 demo: vibe
 links:
-  code: ""
-  demo: ""
+  code: "https://github.com/arshdeep3010/vibe-audit"
+  demo: "https://d2vy8g526grxgy.cloudfront.net"
   video: ""
 ---
 
