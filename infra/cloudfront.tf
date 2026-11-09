@@ -91,9 +91,14 @@ resource "aws_cloudfront_distribution" "site" {
     }
   }
 
-  # Uses the free *.cloudfront.net certificate. To use your own
-  # domain later, add an ACM certificate in us-east-1 and aliases here.
+  # The *.cloudfront.net address always works. With a custom domain attached
+  # (see domain.tf), CloudFront also answers on it with its own certificate.
+  aliases = local.use_custom_domain ? [var.custom_domain] : []
+
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = local.use_custom_domain ? null : true
+    acm_certificate_arn            = local.use_custom_domain ? aws_acm_certificate_validation.site[0].certificate_arn : null
+    ssl_support_method             = local.use_custom_domain ? "sni-only" : null
+    minimum_protocol_version       = local.use_custom_domain ? "TLSv1.2_2021" : null
   }
 }

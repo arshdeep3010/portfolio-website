@@ -37,3 +37,15 @@ variable "price_class" {
   type        = string
   default     = "PriceClass_200"
 }
+
+variable "custom_domain" {
+  description = "Optional custom domain for the site, e.g. arshdeepsingh.is-a.dev. Empty = only the *.cloudfront.net address."
+  type        = string
+  default     = ""
+}
+
+variable "attach_custom_domain" {
+  description = "Set to true once the custom_domain certificate is ISSUED (its validation DNS record is live). Step 2 of domain.tf."
+  type        = bool
+  default     = false
+}

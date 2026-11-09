@@ -7,3 +7,5 @@ github_repo = "your-github-username/portfolio-website"
 # github_branch               = "main"
 # create_github_oidc_provider = false  # if the account already has the GitHub OIDC provider
 # github_sub_prefix           = "repo:owner@123/name@456"  # from: gh api repos/OWNER/NAME/actions/oidc/customization/sub
+# custom_domain               = "yourname.is-a.dev"  # see domain.tf: two-step setup
+# attach_custom_domain        = false                # true once the certificate is ISSUED
