@@ -3,15 +3,15 @@ title: Health Claim Agent
 pitch: AI-assisted claim decisions where the Java backend, not the model, makes the final call.
 order: 3
 featured: true
-status: code
+status: live
 tags: [GenAI, Backend]
 stack: [Java 21, Spring Boot, pgvector, React]
 metric: "<b>122 tests</b> · AI called only after 7 rules pass"
 metricDate: "2026-11"
 demo: health
 links:
-  code: ""
-  demo: ""
+  code: "https://github.com/arshdeep3010/health-claim-decision-agent"
+  demo: "https://d97tm0469lmul.cloudfront.net/"
   video: ""
 ---
 

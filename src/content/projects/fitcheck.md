@@ -11,7 +11,7 @@ metricDate: "2026-11"
 demo: fit
 links:
   code: "https://github.com/arshdeep3010/fitcheck"
-  demo: "https://f7yxpsphemzbymhpc5uu6qzz4q0oilnj.lambda-url.ap-south-1.on.aws/"
+  demo: "https://d3fkoasdzz9loq.cloudfront.net/"
   video: ""
 ---
 
