@@ -3,7 +3,7 @@ title: LLM Gateway
 pitch: One front door for every AI call. It keeps apps answering when a provider fails and keeps private details in.
 order: 5
 featured: true
-status: code
+status: live
 tags: [Backend, GenAI]
 stack: [Java 21, Spring Boot, Virtual threads, SSE, Terraform, GitHub Actions]
 metric: "<b>20,000 / 20,000</b> answered with the first provider off · <b>72 tests</b>"
@@ -11,7 +11,7 @@ metricDate: "2026-11"
 demo: gateway
 links:
   code: "https://github.com/arshdeep3010/llm-gateway"
-  demo: ""
+  demo: "https://d3ddocftym6j0y.cloudfront.net"
   video: ""
 demoNote: "The hosted demo is a simulation: it runs a JavaScript copy of the gateway's steps in your browser, and says so on the page. The real gateway is a Java server. Every number here was measured on that server, which you can download and run from GitHub."
 ---
