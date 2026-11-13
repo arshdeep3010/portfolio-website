@@ -32,7 +32,7 @@ AI agents that run many steps die halfway through. When they're retried, they re
 - **Rules that stop the model cheating.** Every acceptance criterion needs a test that fails before any code exists, and a test with no assert is rejected before it runs. Then the tests are hashed and locked: any change to them fails a check and sends the build back. Changing files outside the approved design fails the scope gate.
 - **A locked-down Docker sandbox** for AI-written code: no network, read-only, 512 MB, 1 CPU, non-root, hard timeout. The gates are pytest, test lock, scope lock, protected files, secrets, syntax, changed-line coverage of at least 80%, ruff, mypy and bandit.
 - **Deployed serverless on AWS.** Four Lambda functions: the API with live streaming, a worker that starts only when there is work, and a sandbox and shop preview in a network with no internet route. Terraform sets it all up, and GitHub Actions tests every push, then deploys it with no AWS keys stored in GitHub.
-- **A live UI** for one real task: adding discount coupons to ShopLite, a small FastAPI shop. You see the shop before, watch each step tick, read every document, approve, and open the new shop after the merge.
+- **A live demo** of one real task: adding discount coupons to ShopLite, a small FastAPI shop. You see the shop before, watch each step tick, read every document, approve, and open the new shop after the merge.
 
 ## The hard parts
 

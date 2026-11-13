@@ -13,7 +13,7 @@ links:
   code: "https://github.com/arshdeep3010/llm-gateway"
   demo: "https://d3ddocftym6j0y.cloudfront.net"
   video: ""
-demoNote: "The hosted demo is a simulation: it runs a JavaScript copy of the gateway's steps in your browser, and says so on the page. The real gateway is a Java server. Every number here was measured on that server, which you can download and run from GitHub."
+demoNote: "The hosted demo is a simulation: it runs a copy of the gateway's steps in your browser, and says so on the page. The real gateway is a Java server. Every number here was measured on that server, which you can download and run from GitHub."
 ---
 
 ## The problem
@@ -48,8 +48,8 @@ Apps point their OpenAI SDK's base URL at the gateway and change nothing else. E
 - **The reliability parts written by hand**, with no resilience library: a circuit breaker with closed, open and half-open states, retries with backoff and jitter, and a fallback chain.
 - **Redaction that uses checksums.** A 12-digit number is treated as Aadhaar only if it passes the Verhoeff check, and a card number only if it passes Luhn, so order numbers are not hidden by mistake.
 - **A cache keyed on the redacted prompt.** It never holds private values, and two people asking the same question with different names share one stored answer while each gets their own name back.
-- **A playground and dashboard** that show every step a request went through, what left the gateway, and what came back.
-- **A pipeline:** GitHub Actions runs 72 Java tests and 12 tests for the demo's browser copy on every push, then publishes the demo page to S3 and CloudFront. Terraform creates the AWS side, and GitHub signs in with a short-lived token, so no AWS keys are stored.
+- **Telemetry and admin APIs:** per-request records of every step, what left the gateway and what came back, plus live counts, cost and provider health. No prompt or answer text is stored.
+- **A pipeline:** GitHub Actions runs the 72 Java tests on every push, then publishes the demo page to S3 and CloudFront. Terraform creates the AWS side, and GitHub signs in with a short-lived token, so no AWS keys are stored.
 
 ## The hard parts
 
@@ -72,4 +72,4 @@ Checked by hand against a real model, NVIDIA `nemotron-3-ultra-550b-a55b`: the m
 
 - Move rate limits and the cache to Redis, and logs and budgets to Postgres. Today all state is in memory in one process.
 - A labelled test set, to put precision and recall numbers on redaction and injection detection. Both use patterns today, so a name with no cue or a reworded attack gets through.
-- Send FitCheck's traffic through it, so the dashboard shows real use.
+- Send FitCheck's traffic through it, so its telemetry shows real use.

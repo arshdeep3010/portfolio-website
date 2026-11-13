@@ -5,8 +5,8 @@ order: 3
 featured: true
 status: live
 tags: [GenAI, Backend]
-stack: [Java 21, Spring Boot, pgvector, React]
-metric: "<b>122 tests</b> · AI called only after 7 rules pass"
+stack: [Java 21, Spring Boot, pgvector, RAG, SSE]
+metric: "<b>122 backend tests</b> · AI called only after 7 rules pass"
 metricDate: "2026-11"
 demo: health
 links:
@@ -26,7 +26,7 @@ AI in insurance decisions has to be auditable, and it must not make the final ca
 - **The AI is consulted only when the rules allow.** Mercury (via OpenRouter) answers in a strict JSON schema. Java accepts an approval only at confidence 0.5 or above, turns an AI rejection with no rule behind it into a human review, and sends any AI or retrieval failure to a person.
 - **RAG over policy wording** with NVIDIA NIM embeddings (query and passage) in pgvector with an HNSW index. Every decision stores a snapshot of the evidence it used: document, page, section and similarity.
 - **Production basics:** JWT with three roles, rate limits on the AI endpoints, idempotency keys, Resilience4j timeouts, retries and a circuit breaker, Prometheus metrics, and a non-root Docker image with CI.
-- **A React demo** that streams each stage live over SSE with server timings, shows the whole policy rulebook from Postgres, and shows the exact package the model received and what it answered. Synthetic data only.
+- **A live event stream (SSE)** of every stage with server timings, the whole policy rulebook from Postgres, and the exact package the model received and what it answered. Synthetic data only.
 
 ## The hard parts
 
@@ -36,7 +36,7 @@ AI in insurance decisions has to be auditable, and it must not make the final ca
 
 ## Results
 
-- **122 tests pass:** 100 backend (unit, contract tests against a mock model, Testcontainers with pgvector and LocalStack S3, security) and 22 frontend. All run offline, with no paid API in CI.
+- **122 backend tests pass:** unit, contract tests against a mock model, Testcontainers with pgvector and LocalStack S3, and security. All run offline in CI, with no paid API.
 - **A claim the rules decide skips the AI** and finishes in well under a second. One AI call takes about 3–5 seconds.
 
 The AI-assisted evaluation arm hasn't been run yet, so there's no accuracy number here. The rules-only run agrees with its own labels by design, so it isn't quoted as a result.
