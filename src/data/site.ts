@@ -51,11 +51,11 @@ export const principles = [
 
 // Every skill group points at the projects that prove it.
 export const skills = [
-  { group: 'Backend', items: ['Java 21', 'Spring Boot 3', 'Spring Security (JWT)', 'JPA', 'FastAPI', 'REST', 'SSE'], proof: ['health-claim-agent', 'vibe-audit', 'agentops'] },
+  { group: 'Backend', items: ['Java 21', 'Spring Boot 3', 'Virtual threads', 'Spring Security (JWT)', 'JPA', 'FastAPI', 'REST', 'SSE'], proof: ['llm-gateway', 'health-claim-agent', 'vibe-audit', 'agentops'] },
   { group: 'GenAI', items: ['RAG', 'pgvector', 'Embeddings', 'Structured outputs', 'LangGraph', 'Evals', 'Grounding'], proof: ['fitcheck', 'health-claim-agent'] },
-  { group: 'Agents and reliability', items: ['Durable workflows', 'Leases and fencing', 'Idempotency', 'Human in the loop', 'Sandboxing'], proof: ['agentops'] },
+  { group: 'Agents and reliability', items: ['Durable workflows', 'Leases and fencing', 'Idempotency', 'Circuit breakers and fallback', 'Rate limiting', 'Human in the loop', 'Sandboxing'], proof: ['agentops', 'llm-gateway'] },
   { group: 'Data', items: ['PostgreSQL (SKIP LOCKED, LISTEN/NOTIFY)', 'pgvector', 'DynamoDB'], proof: ['agentops', 'fitcheck'] },
-  { group: 'Cloud and DevOps', items: ['Docker', 'GitHub Actions', 'AWS Lambda', 'EventBridge', 'Terraform', 'S3 + CloudFront'], proof: ['agentops', 'health-claim-agent'] },
+  { group: 'Cloud and DevOps', items: ['Docker', 'GitHub Actions', 'AWS Lambda', 'EventBridge', 'Terraform', 'S3 + CloudFront'], proof: ['agentops', 'health-claim-agent', 'llm-gateway'] },
   { group: 'Frontend', items: ['React + TypeScript', 'Vanilla JS UIs with SSE', 'Astro'], proof: ['health-claim-agent', 'vibe-audit'] },
 ];
 
@@ -78,4 +78,4 @@ export const publication = {
   href: 'https://ieeexplore.ieee.org/document/10918528',
 };
 
-export const certifications = ['Claude Certified Architect', 'Claude Certified Developer Foundations'];
+export const certifications = ['Claude Certified Architect', 'Claude Certified Developer Foundations','Certified Ethical Hacker (CEHV12)'];

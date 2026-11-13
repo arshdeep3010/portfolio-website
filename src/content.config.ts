@@ -19,7 +19,7 @@ const projects = defineCollection({
       stack: z.array(z.string()).min(1),
       metric: z.string().default(''), // one measured line; HTML <b> allowed for emphasis
       metricDate: z.string().default(''), // when it was measured, e.g. 2026-11
-      demo: z.enum(['chaos', 'fit', 'health', 'vibe', 'none']).default('none'),
+      demo: z.enum(['chaos', 'fit', 'health', 'vibe', 'gateway', 'none']).default('none'),
       image: z.string().default(''), // /media/<file> for projects without a live demo
       // A walkthrough video hosted with the site, shown in a player on the case-study page.
       video: z

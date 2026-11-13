@@ -1,7 +1,7 @@
 ---
 // Small live demos shown inside project cards. Each one is an illustration of
 // what the project does; all of them are driven by the script at the bottom.
-interface Props { type: 'chaos' | 'fit' | 'health' | 'vibe' | 'none'; image?: string; title: string }
+interface Props { type: 'chaos' | 'fit' | 'health' | 'vibe' | 'gateway' | 'none'; image?: string; title: string }
 const { type, image = '', title } = Astro.props;
 
 const fitRows: [string, 'yes' | 'no'][] = [
@@ -60,6 +60,20 @@ const code = [
     <span class="vgrade">grade<b>F</b></span>
   </div>
 )}
+{type === 'gateway' && (
+  <div class="demo" data-demo="gateway" role="img" aria-label="Illustration: a request goes through the gateway. When the first provider fails, the backup provider answers, and no request is lost.">
+    <span class="lbl">provider outage</span>
+    <div class="gpipe">
+      <div class="gnode on">App</div>
+      <div class="gnode on">Gateway</div>
+      <div class="gprov">
+        <div class="gnode skip" data-p="0">Provider 1<small>circuit open</small></div>
+        <div class="gnode ok" data-p="1">Provider 2<small>answered</small></div>
+      </div>
+    </div>
+    <div class="gout"><span class="gstate">provider 1 skipped, no time wasted</span><span class="gcount"><b>20,000</b> / 20,000</span></div>
+  </div>
+)}
 {type === 'none' && (
   <div class="demo shot">
     {image && <img src={image} alt={'Screenshot of ' + title} loading="lazy" decoding="async" />}
@@ -114,6 +128,20 @@ const code = [
   .vfind .md b { color: var(--warn); }
   .vgrade { position: absolute; right: 12px; bottom: 10px; font: 600 13px var(--f-mono); color: var(--mu); }
   .vgrade b { color: var(--bad); font-size: 20px; margin-left: 6px; }
+
+  .gpipe { position: absolute; left: 14px; right: 14px; top: 38px; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: 10px; align-items: center; }
+  .gprov { display: grid; gap: 8px; }
+  .gnode { padding: 9px 6px; border-radius: 10px; border: 1px solid var(--ln); background: rgba(255, 255, 255, 0.025); text-align: center; color: var(--mu); transition: border-color 0.3s, color 0.3s, opacity 0.3s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gnode small { display: block; margin-top: 1px; font-size: 10px; color: var(--dim); }
+  .gnode:global(.on) { border-color: var(--g1); color: var(--tx); }
+  .gnode:global(.ok) { border-color: rgba(74, 222, 128, 0.6); color: var(--ok); }
+  .gnode:global(.bad) { border-color: rgba(248, 113, 113, 0.6); color: var(--bad); }
+  .gnode:global(.skip) { border-style: dashed; opacity: 0.55; }
+  .gnode:global(.idle) { opacity: 0.4; }
+  .gout { position: absolute; left: 14px; right: 14px; bottom: 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .gstate { color: var(--dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gcount { white-space: nowrap; }
+  .gcount b { color: var(--ok); font-weight: 500; font-size: 15px; }
 
   @media (max-width: 460px) {
     .cgrid { grid-template-columns: repeat(25, 6px); gap: 2px; }
@@ -194,7 +222,22 @@ const code = [
       el.querySelector('.vgrade b')!.textContent = prog >= 1 ? 'F' : '';
     };
 
-    const run: Record<string, (el: HTMLElement, t: number) => void> = { chaos, fit, health, vibe };
+    // --- LLM Gateway: normal, then the first provider fails, then its circuit opens
+    const PHASES = [
+      { p: ['ok', 'idle'], notes: ['answered', 'standby'], state: 'normal: provider 1 answers' },
+      { p: ['bad', 'ok'], notes: ['failed', 'answered'], state: 'provider 1 down: retry, then backup' },
+      { p: ['skip', 'ok'], notes: ['circuit open', 'answered'], state: 'provider 1 skipped, no time wasted' },
+    ];
+    const gateway = (el: HTMLElement, t: number) => {
+      const ph = PHASES[Math.floor((t % 9) / 3)];
+      el.querySelectorAll<HTMLElement>('[data-p]').forEach((n, i) => {
+        n.className = `gnode ${ph.p[i]}`;
+        n.querySelector('small')!.textContent = ph.notes[i];
+      });
+      el.querySelector('.gstate')!.textContent = ph.state;
+    };
+
+    const run: Record<string, (el: HTMLElement, t: number) => void> = { chaos, fit, health, vibe, gateway };
     const t0 = performance.now();
     const loop = (now: number) => {
       requestAnimationFrame(loop);
