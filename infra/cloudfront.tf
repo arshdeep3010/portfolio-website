@@ -54,6 +54,65 @@ resource "aws_cloudfront_distribution" "site" {
     origin_access_control_id = aws_cloudfront_origin_access_control.site.id
   }
 
+  # Prep Desk at /dsaprep (see dsaprep.tf). Never cached: it's a live private app.
+  dynamic "origin" {
+    for_each = local.dsaprep ? [1] : []
+    content {
+      origin_id                = "dsaprep-page"
+      domain_name              = var.dsaprep_bucket_domain
+      origin_access_control_id = aws_cloudfront_origin_access_control.site.id
+    }
+  }
+
+  dynamic "origin" {
+    for_each = local.dsaprep ? [1] : []
+    content {
+      origin_id                = "dsaprep-api"
+      domain_name              = var.dsaprep_api_host
+      origin_access_control_id = aws_cloudfront_origin_access_control.dsaprep_api[0].id
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
+    }
+  }
+
+  dynamic "ordered_cache_behavior" {
+    for_each = local.dsaprep ? ["/dsaprep/api/*"] : []
+    content {
+      path_pattern             = ordered_cache_behavior.value
+      target_origin_id         = "dsaprep-api"
+      viewer_protocol_policy   = "https-only"
+      allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+      cached_methods           = ["GET", "HEAD"]
+      compress                 = true
+      cache_policy_id          = local.cache_policy_caching_disabled
+      origin_request_policy_id = local.origin_request_all_viewer_except_host_head
+    }
+  }
+
+  dynamic "ordered_cache_behavior" {
+    for_each = local.dsaprep_page_paths
+    content {
+      path_pattern               = ordered_cache_behavior.value
+      target_origin_id           = "dsaprep-page"
+      viewer_protocol_policy     = "redirect-to-https"
+      allowed_methods            = ["GET", "HEAD"]
+      cached_methods             = ["GET", "HEAD"]
+      compress                   = true
+      cache_policy_id            = local.cache_policy_caching_disabled
+      response_headers_policy_id = local.response_headers_security_policy
+
+      function_association {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.dsaprep_page[0].arn
+      }
+    }
+  }
+
   default_cache_behavior {
     target_origin_id           = local.s3_origin_id
     viewer_protocol_policy     = "redirect-to-https"
