@@ -15,7 +15,7 @@ links:
   video: ""
 demoNote: "The live demo uses pre-written AI replies for one task, so it stays free. The engine, sandbox, checks, approvals and shop are real. To type your own task, run it from GitHub with your own model key."
 video:
-  src: /media/agentops-demo.mp4
+  src: /media/agentops-demo-v2.mp4
   poster: /media/agentops-demo-poster.jpg
   length: 3 min
   caption: "A real live-model run on 7 Nov 2026 (model wait time sped up): one sentence in, a coupon feature for ShopLite out. Requirements, design, tests first, a failed check sent back to the AI, review, and three human approvals, merged in 5.5 minutes."
