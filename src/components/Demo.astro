@@ -48,14 +48,14 @@ const code = [
   </div>
 )}
 {type === 'vibe' && (
-  <div class="demo" data-demo="vibe" role="img" aria-label="Illustration: a scan finds a hardcoded secret, SQL built from user input and a login with no rate limit.">
+  <div class="demo" data-demo="vibe" role="img" aria-label="Illustration: a scan finds a hardcoded secret with the secret scan, SQL built from user input with Semgrep and the model, and a login with no rate limit with the model.">
     <span class="lbl">scan</span>
     <div class="vcode">{code.map(([l, n]) => <div class:list={['ln', { hl: n >= 0 }]}>{l}</div>)}</div>
     <span class="vscan"></span>
     <div class="vfind">
-      <div class="hi on" data-f="2"><b>HIGH</b>hardcoded secret · line 3</div>
-      <div class="hi on" data-f="4"><b>HIGH</b>SQL from user input · line 5</div>
-      <div class="md on" data-f="7"><b>MEDIUM</b>no rate limit on login · line 8</div>
+      <div class="hi on" data-f="2"><b>HIGH</b>leaked key · secret scan</div>
+      <div class="hi on" data-f="4"><b>HIGH</b>SQLi · semgrep + model</div>
+      <div class="md on" data-f="7"><b>MEDIUM</b>no rate limit · model</div>
     </div>
     <span class="vgrade">grade<b>F</b></span>
   </div>
