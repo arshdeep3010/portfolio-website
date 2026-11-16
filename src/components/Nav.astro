@@ -8,7 +8,7 @@ const to = (hash: string) => (onHome ? hash : `/${hash}`);
 ---
 <header class="nav">
   <div class="container nav-in">
-    <a class="brand" href="/" aria-label={`${site.name}, home`}><span class="logo" aria-hidden="true">AS</span>{site.name}</a>
+    <a class="brand" href="/" aria-label={`${site.name} Guransh Singh, home`}><span class="logo" aria-hidden="true">AS</span><span class="names"><span>{site.name}</span> <span>Guransh Singh</span></span></a>
     <nav aria-label="Main" class="links">
       <a href={to('#work')}>Work</a>
       <a href={to('#how')}>How I build</a>
@@ -42,9 +42,14 @@ const to = (hash: string) => (onHome ? hash : `/${hash}`);
   .links a, .plain { color: var(--mu); text-decoration: none; transition: color 0.2s; }
   .links a:hover, .plain:hover { color: var(--tx); }
   .actions { display: flex; align-items: center; gap: 18px; font-size: 14px; }
-  .sm { padding: 8px 14px; font-size: 14px; border-radius: 9px; }
+  .sm { padding: 8px 14px; font-size: 14px; border-radius: 9px; white-space: nowrap; }
   @media (max-width: 820px) {
     .links { display: none; }
     .plain { display: none; }
+  }
+  .names > span { white-space: nowrap; }
+  @media (max-width: 480px) {
+    .brand { white-space: normal; }
+    .names { line-height: 1.2; }
   }
 </style>
